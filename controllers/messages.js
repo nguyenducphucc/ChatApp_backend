@@ -13,7 +13,7 @@ const extractToken = (req) => {
 };
 
 messagesRouter.get("/", async (req, res) => {
-  const messages = await Message.find({});
+  const messages = await Message.find({}).populate("user");
   return res.json(messages);
 });
 
@@ -53,7 +53,10 @@ messagesRouter.post("/", async (req, res) => {
     user.messages = user.messages.concat(savedMessage._id);
     await user.save();
 
-    res.status(201).json(savedMessage);
+    const returnedMessage = await Message.findById(savedMessage._id).populate(
+      "user"
+    );
+    res.status(201).json(returnedMessage);
   } catch (err) {
     console.log(err);
 
