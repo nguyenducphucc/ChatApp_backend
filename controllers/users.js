@@ -10,10 +10,18 @@ usersRouter.get("/", async (req, res) => {
 usersRouter.post("/", async (req, res) => {
   const { username, password, name } = req.body;
 
+  if (!username || !password || !name) {
+    return res.status(400).json({
+      error:
+        ">>> It looks like there is at least one part of missing information. Please fill out all needed info!",
+    });
+  }
+
   const existingUser = await User.findOne({ username });
   if (existingUser) {
     return res.status(400).json({
-      error: "username must be unique",
+      error:
+        ">>> It looks like that username has been taken. Please choose different username.",
     });
   }
 

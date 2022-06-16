@@ -7,6 +7,13 @@ const config = require("../utils/config");
 loginRouter.post("/", async (req, res) => {
   const { username, password } = req.body;
 
+  if (!username || !password) {
+    return res.status(400).json({
+      error:
+        ">>> It looks like there is at least one part of missing information. Please fill out all needed info",
+    });
+  }
+
   const existingUser = await User.findOne({ username });
   const isPasswordCorrect =
     existingUser === null
@@ -15,7 +22,7 @@ loginRouter.post("/", async (req, res) => {
 
   if (!existingUser || !isPasswordCorrect) {
     return res.status(401).json({
-      error: "Invalid username or password",
+      error: ">>> It looks like you have entered wrong username or password.",
     });
   }
   const userForToken = {

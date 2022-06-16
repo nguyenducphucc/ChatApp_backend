@@ -9,6 +9,7 @@ const extractToken = (req) => {
   if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
     return authorization.substring(7);
   }
+  return null;
 };
 
 messagesRouter.get("/", async (req, res) => {
@@ -23,7 +24,21 @@ messagesRouter.get("/:id", async (req, res) => {
 
 messagesRouter.post("/", async (req, res) => {
   const body = req.body;
+
+  if (!body.content) {
+    return res.status(400).json({
+      error: "It looks like you are sending nothing. Content is required.",
+    });
+  }
+
   const token = extractToken(req);
+  if (token === null) {
+    return res.status(400).json({
+      error: "It looks like you somehow got here. Login is required.",
+      name: "loginRequired",
+    });
+  }
+
   try {
     const decodedToken = jwt.verify(token, config.SECRET);
     const user = await User.findById(decodedToken.id);
@@ -43,9 +58,16 @@ messagesRouter.post("/", async (req, res) => {
     console.log(err);
 
     if (err.name === "TokenExpiredError") {
-      res.status(401).json({ error: "Token has expired" });
+      res.status(401).json({
+        error:
+          "It looks like you have gone for a long time. Login is required.",
+        name: "loginRequired",
+      });
     } else if (err.name === "JsonWebTokenError") {
-      return res.status(401).json({ error: "invalid token" });
+      return res.status(401).json({
+        error: "It looks like there is something wrong. Login is required.",
+        name: "loginRequired",
+      });
     }
   }
 });
