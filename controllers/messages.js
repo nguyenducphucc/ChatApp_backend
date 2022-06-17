@@ -27,14 +27,14 @@ messagesRouter.post("/", async (req, res) => {
 
   if (!body.content) {
     return res.status(400).json({
-      error: "It looks like you are sending nothing. Content is required.",
+      error: ">>> It looks like you are sending nothing. Content is required.",
     });
   }
 
   const token = extractToken(req);
   if (token === null) {
     return res.status(400).json({
-      error: "It looks like you somehow got here. Login is required.",
+      error: ">>> It looks like you somehow got here. Login is required.",
       name: "loginRequired",
     });
   }
@@ -63,12 +63,12 @@ messagesRouter.post("/", async (req, res) => {
     if (err.name === "TokenExpiredError") {
       res.status(401).json({
         error:
-          "It looks like you have gone for a long time. Login is required.",
+          ">>> It looks like you have gone for a long time. Login is required.",
         name: "loginRequired",
       });
     } else if (err.name === "JsonWebTokenError") {
       return res.status(401).json({
-        error: "It looks like there is something wrong. Login is required.",
+        error: ">>> It looks like there is something wrong. Login is required.",
         name: "loginRequired",
       });
     }
