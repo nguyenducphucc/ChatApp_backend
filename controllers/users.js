@@ -32,10 +32,37 @@ usersRouter.post("/", async (req, res) => {
     username,
     name,
     passwordHash,
+    imageUrl:
+      "https://firebasestorage.googleapis.com/v0/b/fest-d765b.appspot.com/o/avatar%2FUnknown_person.jpg?alt=media&token=6ea47852-5ae3-4860-8db2-71c1c2a79bbb",
   });
 
   const savedUser = await newUser.save();
   res.status(201).json(savedUser);
+});
+
+usersRouter.get("/:id", async (req, res) => {
+  const targetUser = await User.findById(req.params.id);
+  return res.status(200).json(targetUser);
+});
+
+usersRouter.put("/avatar/:id", async (req, res) => {
+  const imageUrl = req.body.imageUrl;
+
+  const targetUser = await User.findById(req.params.id);
+  const changedUser = {
+    ...targetUser._doc,
+    imageUrl: imageUrl,
+  };
+
+  console.log(changedUser);
+
+  const returnedUser = await User.findByIdAndUpdate(
+    req.params.id,
+    changedUser,
+    { new: true }
+  );
+
+  res.json(returnedUser);
 });
 
 module.exports = usersRouter;

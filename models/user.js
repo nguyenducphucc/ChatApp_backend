@@ -16,6 +16,9 @@ const userSchema = mongoose.Schema({
   role: {
     type: String,
   },
+  imageUrl: {
+    type: String,
+  },
   messages: [
     {
       type: mongoose.Schema.Types.ObjectId,
