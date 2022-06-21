@@ -54,8 +54,6 @@ usersRouter.put("/avatar/:id", async (req, res) => {
     imageUrl: imageUrl,
   };
 
-  console.log(changedUser);
-
   const returnedUser = await User.findByIdAndUpdate(
     req.params.id,
     changedUser,

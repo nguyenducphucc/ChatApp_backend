@@ -25,6 +25,10 @@ app.use("/api/messages", messagesRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
 
+app.get("*", (req, res) => {
+  res.sendFile(__dirname + "/build/index.html");
+});
+
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 
