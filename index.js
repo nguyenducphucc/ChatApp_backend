@@ -7,9 +7,21 @@ server.listen(config.PORT, () => {
   console.log(`Server running on port ${config.PORT}`);
 });
 
+var clientsCount = 0;
 const io = require("socket.io")(server, { cors: { origin: "*" } });
 io.on("connection", (socket) => {
-  console.log("Websocket connected!, userID: " + socket.id);
+  console.log("Websocket connected!, userID:", socket.id);
+
+  socket.on("disconnect", () => {
+    clientsCount--;
+    socket.broadcast.emit("clientsCount", "off");
+  });
+
+  socket.on("online", () => {
+    clientsCount++;
+    socket.emit("clientsCount", clientsCount);
+    socket.broadcast.emit("clientsCount", "on");
+  });
 
   socket.on("message", (data) => {
     socket.broadcast.emit("message", data);
