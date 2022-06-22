@@ -9,7 +9,7 @@ server.listen(config.PORT, () => {
 
 var clientsCount = 0;
 const io = require("socket.io")(server, { cors: { origin: "*" } });
-io.on("connection", (socket) => {
+io.of("/messages").on("connection", (socket) => {
   console.log("Websocket connected!, userID:", socket.id);
 
   socket.on("disconnect", () => {
