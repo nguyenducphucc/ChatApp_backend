@@ -24,28 +24,21 @@ messagesRouter.get("/:id", async (req, res) => {
 
 messagesRouter.post("/", async (req, res) => {
   const body = req.body;
+  console.log(body);
 
-  if (!body.content) {
+  if (!body.content && body.imageMessages.length === 0) {
     return res.status(400).json({
       error: ">>> It looks like you are sending nothing. Content is required.",
     });
   }
 
-  const token = extractToken(req);
-  if (token === null) {
-    return res.status(400).json({
-      error: ">>> It looks like you somehow got here. Login is required.",
-      name: "loginRequired",
-    });
-  }
-
   try {
-    const decodedToken = jwt.verify(token, config.SECRET);
-    const user = await User.findById(decodedToken.id);
+    const user = await User.findById(body.userId);
 
     const newMessage = new Message({
       content: body.content,
       time: body.time,
+      imageMessages: body.imageMessages,
       user: user._id,
     });
 
@@ -57,6 +50,26 @@ messagesRouter.post("/", async (req, res) => {
       "user"
     );
     res.status(201).json(returnedMessage);
+  } catch (err) {
+    console.log(err);
+    res.status(401).json({
+      error: ">>> It looks like there is an error that we don't expect.",
+    });
+  }
+});
+
+messagesRouter.post("/verify", async (req, res) => {
+  const token = extractToken(req);
+  if (token === null) {
+    return res.status(400).json({
+      error: ">>> It looks like you somehow got here. Login is required.",
+      name: "loginRequired",
+    });
+  }
+
+  try {
+    const decodedToken = jwt.verify(token, config.SECRET);
+    res.status(200).json({ id: decodedToken.id });
   } catch (err) {
     console.log(err);
 

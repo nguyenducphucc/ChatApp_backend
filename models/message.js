@@ -3,12 +3,21 @@ const mongoose = require("mongoose");
 const messageSchema = mongoose.Schema({
   content: {
     type: String,
-    required: true,
   },
   time: {
     type: String,
     required: true,
   },
+  imageMessages: [
+    {
+      url: {
+        type: String,
+      },
+      imageName: {
+        type: String,
+      },
+    },
+  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

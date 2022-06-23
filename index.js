@@ -8,6 +8,7 @@ server.listen(config.PORT, () => {
 });
 
 var clientsCount = 0;
+var user_name = "";
 const io = require("socket.io")(server, { cors: { origin: "*" } });
 io.of("/messages").on("connection", (socket) => {
   console.log("Websocket connected!, userID:", socket.id);
@@ -15,6 +16,7 @@ io.of("/messages").on("connection", (socket) => {
   socket.on("disconnect", () => {
     clientsCount--;
     socket.broadcast.emit("clientsCount", "off");
+    socket.broadcast.emit("typing", { type: "stop", name: user_name });
   });
 
   socket.on("online", () => {
@@ -28,6 +30,7 @@ io.of("/messages").on("connection", (socket) => {
   });
 
   socket.on("typing", (data) => {
+    user_name = data.name;
     socket.broadcast.emit("typing", data);
   });
 });
