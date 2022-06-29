@@ -18,6 +18,9 @@ const messageSchema = mongoose.Schema({
       },
     },
   ],
+  gifId: {
+    type: String,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

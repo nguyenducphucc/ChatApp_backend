@@ -13,7 +13,10 @@ const extractToken = (req) => {
 };
 
 messagesRouter.get("/", async (req, res) => {
-  const messages = await Message.find({}).populate("user");
+  const messages = await Message.find({}).populate(
+    "user",
+    "id imageUrl name role username"
+  );
   return res.json(messages);
 });
 
@@ -26,7 +29,7 @@ messagesRouter.post("/", async (req, res) => {
   const body = req.body;
   console.log(body);
 
-  if (!body.content && body.imageMessages.length === 0) {
+  if (!body.content && !body.imageMessages && !body.gifId) {
     return res.status(400).json({
       error: ">>> It looks like you are sending nothing. Content is required.",
     });
@@ -36,9 +39,7 @@ messagesRouter.post("/", async (req, res) => {
     const user = await User.findById(body.userId);
 
     const newMessage = new Message({
-      content: body.content,
-      time: body.time,
-      imageMessages: body.imageMessages,
+      ...body,
       user: user._id,
     });
 
@@ -46,9 +47,16 @@ messagesRouter.post("/", async (req, res) => {
     user.messages = user.messages.concat(savedMessage._id);
     await user.save();
 
-    const returnedMessage = await Message.findById(savedMessage._id).populate(
-      "user"
-    );
+    const returnedMessage = {
+      ...savedMessage._doc,
+      user: {
+        id: user.id,
+        imageUrl: user.imageUrl,
+        name: user.name,
+        role: user.role,
+      },
+    };
+
     res.status(201).json(returnedMessage);
   } catch (err) {
     console.log(err);
