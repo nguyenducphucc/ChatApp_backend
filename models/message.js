@@ -5,7 +5,7 @@ const messageSchema = mongoose.Schema({
     type: String,
   },
   time: {
-    type: String,
+    type: Number,
     required: true,
   },
   imageMessages: [
