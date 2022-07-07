@@ -16,10 +16,24 @@ const messageSchema = mongoose.Schema({
       imageName: {
         type: String,
       },
+      width: {
+        type: Number,
+      },
+      height: {
+        type: Number,
+      },
     },
   ],
-  gifId: {
-    type: String,
+  gifMessage: {
+    gifId: {
+      type: String,
+    },
+    width: {
+      type: Number,
+    },
+    height: {
+      type: Number,
+    },
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,

@@ -13,23 +13,26 @@ const extractToken = (req) => {
 };
 
 messagesRouter.get("/", async (req, res) => {
-  const messages = await Message.find({}).populate(
-    "user",
-    "id imageUrl name role username"
-  );
+  const messages = await Message.find({})
+    .limit(20)
+    .sort({ _id: -1 })
+    .populate("user", "id imageUrl name role username");
   return res.json(messages);
 });
 
 messagesRouter.get("/:id", async (req, res) => {
-  const message = await Message.findById(req.params.id);
-  return message ? res.json(message) : res.status(404).end();
+  const messages = await Message.find({ _id: { $lt: req.params.id } })
+    .limit(20)
+    .sort({ _id: -1 })
+    .populate("user", "id imageUrl name role username");
+  return messages ? res.json(messages) : res.status(404).end();
 });
 
 messagesRouter.post("/", async (req, res) => {
   const body = req.body;
   console.log(body);
 
-  if (!body.content && !body.imageMessages && !body.gifId) {
+  if (!body.content && !body.imageMessages && !body.gifMessage) {
     return res.status(400).json({
       error: ">>> It looks like you are sending nothing. Content is required.",
     });
