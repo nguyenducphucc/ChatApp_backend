@@ -7,8 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build:ui": "rm -rf build && cd ../ChatApp && npm run build && npm run push && cp -r build ../ChatApp_backend",
-    "deploy": "npm run build:ui && git add . && git commit -am initialcommit && git push -u origin main",
+    "build:ui": "rm -rf build && cd ../ChatApp && npm run build && cp -r build ../ChatApp_backend && npm run push",
+    "deploy": "npm run build:ui && npm run push",
+    "push": "git add . && git commit -am initialcommit && git push -u origin main",
     "logs": "heroku logs --tail"
   },
   "author": "",
