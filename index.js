@@ -20,7 +20,7 @@ io.of("/messages").on("connection", (socket) => {
   });
 
   socket.on("online", () => {
-    clientsCount += 20;
+    clientsCount = clientsCount + 5;
     socket.emit("clientsCount", clientsCount);
     socket.broadcast.emit("clientsCount", "on");
   });
