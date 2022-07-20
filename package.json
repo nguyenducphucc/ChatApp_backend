@@ -8,8 +8,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build:ui": "rm -rf build && cd ../ChatApp && npm run build && cp -r build ../ChatApp_backend && npm run push",
-    "deploy": "npm run build:ui && npm run push",
     "push": "git add . && git commit -am initialcommit && git push -u origin main",
+    "deploy": "npm run build:ui && npm run push",
     "logs": "heroku logs --tail"
   },
   "author": "",
