@@ -10,7 +10,7 @@ server.listen(config.PORT, () => {
 var clientsCount = 0;
 var user_name = "";
 const io = require("socket.io")(server, { cors: { origin: "*" } });
-io.of("/messages").on("connection", (socket) => {
+io.on("connection", (socket) => {
   console.log("Websocket connected!, userID:", socket.id);
 
   socket.on("disconnect", () => {
@@ -32,5 +32,27 @@ io.of("/messages").on("connection", (socket) => {
   socket.on("typing", (data) => {
     user_name = data.name;
     socket.broadcast.emit("typing", data);
+  });
+
+  socket.on("initRoom", (id) => {
+    socket.join(id);
+  });
+
+  socket.on("friendRelationship", (data) => {
+    const type = data.type;
+    const recipientId = data.recipientId;
+    const requesterId = data.requesterId;
+    const requester = data.requester;
+    const status = data.status;
+    const time = data.time;
+    socket
+      .to(recipientId)
+      .emit("friendRelationship", {
+        type,
+        requester,
+        requesterId,
+        status,
+        time,
+      });
   });
 });

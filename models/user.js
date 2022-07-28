@@ -25,6 +25,12 @@ const userSchema = mongoose.Schema({
       ref: "Message",
     },
   ],
+  friends: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Friend",
+    },
+  ],
 });
 
 userSchema.set("toJSON", {

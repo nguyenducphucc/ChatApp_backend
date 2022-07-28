@@ -41,7 +41,14 @@ usersRouter.post("/", async (req, res) => {
 });
 
 usersRouter.get("/:id", async (req, res) => {
-  const targetUser = await User.findById(req.params.id);
+  const targetUser = await User.findById(req.params.id).populate({
+    path: "friends",
+    select: "recipient status time",
+    populate: {
+      path: "recipient",
+      select: "imageUrl name",
+    },
+  });
   return res.status(200).json(targetUser);
 });
 
