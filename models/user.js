@@ -19,6 +19,9 @@ const userSchema = mongoose.Schema({
   imageUrl: {
     type: String,
   },
+  lastOnline: {
+    type: Number,
+  },
   messages: [
     {
       type: mongoose.Schema.Types.ObjectId,

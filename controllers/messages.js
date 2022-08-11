@@ -14,7 +14,7 @@ const extractToken = (req) => {
 
 messagesRouter.get("/", async (req, res) => {
   const messages = await Message.find({})
-    .limit(20)
+    .limit(25)
     .sort({ _id: -1 })
     .populate("user", "id imageUrl name role username");
   return res.json(messages);
@@ -22,7 +22,7 @@ messagesRouter.get("/", async (req, res) => {
 
 messagesRouter.get("/:id", async (req, res) => {
   const messages = await Message.find({ _id: { $lt: req.params.id } })
-    .limit(20)
+    .limit(25)
     .sort({ _id: -1 })
     .populate("user", "id imageUrl name role username");
   return messages ? res.json(messages) : res.status(404).end();

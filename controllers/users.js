@@ -46,7 +46,7 @@ usersRouter.get("/:id", async (req, res) => {
     select: "recipient status time",
     populate: {
       path: "recipient",
-      select: "imageUrl name",
+      select: "imageUrl name lastOnline",
     },
   });
   return res.status(200).json(targetUser);
