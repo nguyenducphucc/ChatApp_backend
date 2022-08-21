@@ -8,7 +8,6 @@ server.listen(config.PORT, () => {
   console.log(`Server running on port ${config.PORT}`);
 });
 
-var user_name = "";
 var sockets = {};
 var onlineUsersId = {}; // 1 is true
 const io = require("socket.io")(server, { cors: { origin: "*" } });
@@ -20,9 +19,10 @@ io.on("connection", (socket) => {
     if (sockets[socket.id] !== undefined) {
       const targetUser = await User.findById(sockets[socket.id]);
       const lastOnline = Date.now();
+      console.log("disconnection", targetUser);
 
       const changedUser = {
-        ...targetUser._doc,
+        ...targetUser,
         lastOnline,
       };
       await User.findByIdAndUpdate(sockets[socket.id], changedUser);
@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
       socket.broadcast.emit("typing", {
         type: "stop",
         id: sockets[socket.id],
-        name: user_name,
+        name: "",
       });
       delete onlineUsersId[sockets[socket.id]];
       delete sockets[socket.id];

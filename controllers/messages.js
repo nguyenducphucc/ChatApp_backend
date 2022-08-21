@@ -32,7 +32,12 @@ messagesRouter.post("/", async (req, res) => {
   const body = req.body;
   console.log(body);
 
-  if (!body.content && !body.imageMessages && !body.gifMessage) {
+  var noContent = !body.content;
+  var noImage = !body.imageMessages;
+  if (!noImage) noImage = body.imageMessages.length === 0;
+  var noGif = !body.gifMessage;
+
+  if (noContent && noImage && noGif) {
     return res.status(400).json({
       error: ">>> It looks like you are sending nothing. Content is required.",
     });
