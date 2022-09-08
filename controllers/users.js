@@ -41,15 +41,30 @@ usersRouter.post("/", async (req, res) => {
 });
 
 usersRouter.get("/:id", async (req, res) => {
-  const targetUser = await User.findById(req.params.id).populate({
-    path: "friends",
-    select: "recipient status time",
-    populate: {
-      path: "recipient",
-      select: "imageUrl name lastOnline",
-    },
-  });
-  return res.status(200).json(targetUser);
+  try {
+    const targetUser = await User.findById(req.params.id).populate([
+      {
+        path: "friends",
+        select: "recipient status time",
+        populate: {
+          path: "recipient",
+          select: "id imageUrl name lastOnline",
+        },
+      },
+      {
+        path: "convos",
+        select: "createAt users messages",
+        populate: {
+          path: "users",
+          select: "imageUrl name",
+        },
+      },
+    ]);
+    return res.status(200).json(targetUser);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).end();
+  }
 });
 
 usersRouter.put("/avatar/:id", async (req, res) => {

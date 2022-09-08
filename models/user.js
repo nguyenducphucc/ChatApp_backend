@@ -22,6 +22,9 @@ const userSchema = mongoose.Schema({
   lastOnline: {
     type: Number,
   },
+  lastRead: {
+    type: Object,
+  },
   messages: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -34,11 +37,17 @@ const userSchema = mongoose.Schema({
       ref: "Friend",
     },
   ],
+  convos: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Convo",
+    },
+  ],
 });
 
 userSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
+    returnedObject.id = returnedObject._id;
     delete returnedObject._id;
     delete returnedObject.__v;
     delete returnedObject.passwordHash;

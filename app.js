@@ -9,6 +9,7 @@ const usersRouter = require("./controllers/users");
 const loginRouter = require("./controllers/login");
 const gifRouter = require("./controllers/gif");
 const friendsRouter = require("./controllers/friends");
+const convosRouter = require("./controllers/convos");
 
 console.log("Connecting to MongoDB...");
 
@@ -28,6 +29,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/gif", gifRouter);
 app.use("/api/friends", friendsRouter);
+app.use("/api/convos", convosRouter);
 
 app.get("*", (req, res) => {
   res.sendFile(__dirname + "/build/index.html");

@@ -39,6 +39,10 @@ const messageSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  convo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Convo",
+  },
 });
 
 messageSchema.set("toJSON", {

@@ -9,6 +9,7 @@ server.listen(config.PORT, () => {
 });
 
 var sockets = {};
+var lastReadSockets = {};
 var onlineUsersId = {}; // 1 is true
 const io = require("socket.io")(server, { cors: { origin: "*" } });
 io.on("connection", (socket) => {
@@ -16,28 +17,38 @@ io.on("connection", (socket) => {
   socket.emit("newConnection");
 
   socket.on("disconnect", async () => {
-    if (sockets[socket.id] !== undefined) {
-      const targetUser = await User.findById(sockets[socket.id]);
-      const lastOnline = Date.now();
-      console.log("disconnection", targetUser);
+    try {
+      if (sockets[socket.id] !== undefined) {
+        const id = sockets[socket.id];
+        const targetUser = await User.findById(id);
+        const lastOnline = Date.now();
+        console.log("disconnection", targetUser, lastReadSockets[id]);
 
-      const changedUser = {
-        ...targetUser,
-        lastOnline,
-      };
-      await User.findByIdAndUpdate(sockets[socket.id], changedUser);
+        const changedUser = {
+          ...targetUser._doc,
+          lastOnline,
+          lastRead: lastReadSockets[id],
+        };
+        console.log("changedUser", changedUser);
 
-      socket.broadcast.emit("offlineNotify", {
-        userId: sockets[socket.id],
-        lastOnline,
-      });
-      socket.broadcast.emit("typing", {
-        type: "stop",
-        id: sockets[socket.id],
-        name: "",
-      });
-      delete onlineUsersId[sockets[socket.id]];
-      delete sockets[socket.id];
+        await User.findByIdAndUpdate(sockets[socket.id], changedUser);
+
+        socket.broadcast.emit("offlineNotify", {
+          userId: sockets[socket.id],
+          lastOnline,
+        });
+        socket.broadcast.emit("typing", {
+          type: "stop",
+          id: sockets[socket.id],
+          name: "",
+        });
+
+        delete lastReadSockets[id];
+        delete onlineUsersId[id];
+        delete sockets[socket.id];
+      }
+    } catch (err) {
+      console.log(err);
     }
   });
 
@@ -52,6 +63,7 @@ io.on("connection", (socket) => {
   socket.on("initRoom", (id) => {
     socket.join(id);
     sockets[socket.id] = id;
+    lastReadSockets[id] = {};
     onlineUsersId[id] = 1;
   });
 
@@ -83,5 +95,25 @@ io.on("connection", (socket) => {
       status,
       time,
     });
+  });
+
+  socket.on("newConvoNotify", (data) => {
+    const recipientId = data.recipientId;
+    const convoId = data.convoId;
+    const requesterId = data.requesterId;
+    const requesterName = data.requesterName;
+    const requesterImageUrl = data.requesterImageUrl;
+
+    socket.to(recipientId).emit("newConvoNotify", {
+      convoId,
+      requesterId,
+      requesterName,
+      requesterImageUrl,
+    });
+  });
+
+  socket.on("update", (data) => {
+    const id = sockets[socket.id];
+    lastReadSockets[id] = data;
   });
 });
